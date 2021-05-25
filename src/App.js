@@ -7,11 +7,14 @@ import axios from 'axios'
 import Alert from './components/layout/Alert'
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
 import About from './components/pages/About'
+import User from './components/Users/User'
 class App extends Component {
   state ={
     users: [],
+    user:{},
     loading:false,
-    alert: null
+    alert: null,
+    repos:[]
   }
   // async componentDidMount(){
   //   this.setState({loading:true})
@@ -21,6 +24,7 @@ class App extends Component {
   //   this.setState({users:res.data, loading:false})
     
   // }
+  //Search for users in Github using API
   searchUsers=async text =>{
     console.log(text)
     this.setState({loading:true})
@@ -29,24 +33,45 @@ class App extends Component {
     //console.log(process.env.REACT_APP_GITHUB_CLIENT_SECRET)
     this.setState({users:res.data.items, loading:false})
   }
+
+  //Get individual user details
+  getUser = async (username)=>{
+    this.setState({loading:true})
+    const res = await axios.get(`https://api.github.com/users/${username}?&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}
+    &client_secret = ${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`)
+    //console.log(process.env.REACT_APP_GITHUB_CLIENT_SECRET)
+    this.setState({user:res.data, loading:false})
+  }
+
+  //Get repos for a specific user
+  getUserRepos=async (username)=>{
+    this.setState({loading:true})
+    const res = await axios.get(`https://api.github.com/users/${username}/repos?per_page=5&sort=created:asc&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}
+    &client_secret = ${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`)
+    //console.log(process.env.REACT_APP_GITHUB_CLIENT_SECRET)
+    this.setState({repos:res.data, loading:false})
+  }
+  
   clearUsers = ()=>this.setState({users:[], loading:false})
+  
   setAlert =(msg, type)=>{
     this.setState({alert:{msg, type}})
     setTimeout(()=>{
       this.setState({alert:null})
     }, 5000)
   }
-  foo1 = ()=>'Test456'
+  
+  // foo1 = ()=>'Test456'
   render(){
 
-    const name = 'john'
-    const foo = () => 'Test123'
+    // const name = 'john'
+    // const foo = () => 'Test123'
     //const loading = false
-    const showName = true
+    // const showName = true
     // if(loading){
     //   return 'Loading...'
     // }
-    const {users,loading} = this.state
+    const {users,loading, user, repos} = this.state
     return (
       <Router>
         <div className='App'>
@@ -64,10 +89,18 @@ class App extends Component {
                 </Fragment>
               )}/>
               <Route exact path='/about' component={About}/>
+              <Route exact path='/user/:login' render={props =>(
+                <User {...props} 
+                      getUser={this.getUser} 
+                      getUserRepos={this.getUserRepos} 
+                      user={user}
+                      repos={repos} 
+                      loading={loading}/>
+              )}/>
             </Switch>
             
           </div>      
-          {loading ? 'Loading...':<h4>Hello {showName && name.toUpperCase()} and {foo()} and {this.foo1()}</h4>}
+          {/* {loading ? 'Loading...':<h4>Hello {showName && name.toUpperCase()} and {foo()} and {this.foo1()}</h4>} */}
           
         </div>
       </Router>
