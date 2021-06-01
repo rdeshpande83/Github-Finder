@@ -71,37 +71,34 @@ class App extends Component {
     // if(loading){
     //   return 'Loading...'
     // }
-    const {users,loading, user, repos} = this.state
+    const {users,loading, user, repos, alert} = this.state
     return (
       <Router>
         <div className='App'>
           <Navbar  />      
           <div className="container">
-            <Alert alert={this.state.alert}/>
-            <Switch>
-              <Route exact path='/' render={props =>(
-                <Fragment>
-                  <Search searchUsers={this.searchUsers} 
-                          clearUsers = {this.clearUsers} 
-                          showClear={users.length > 0?true :false } 
-                          setAlert={this.setAlert}/>
-                  <Users loading={loading} users={users}/>
-                </Fragment>
-              )}/>
-              <Route exact path='/about' component={About}/>
-              <Route exact path='/user/:login' render={props =>(
-                <User {...props} 
-                      getUser={this.getUser} 
-                      getUserRepos={this.getUserRepos} 
-                      user={user}
-                      repos={repos} 
-                      loading={loading}/>
-              )}/>
-            </Switch>
-            
+            <Alert alert={alert}/>
+              <Switch>
+                <Route exact path='/' render={props =>(
+                  <Fragment>
+                    <Search searchUsers={this.searchUsers} 
+                            clearUsers = {this.clearUsers} 
+                            showClear={users.length > 0?true :false } 
+                            setAlert={this.setAlert}/>
+                    <Users loading={loading} users={users}/>
+                  </Fragment>
+                )}/>
+                <Route exact path='/about' component={About}/>
+                <Route exact path='/user/:login' render={props =>(
+                  <User {...props} 
+                        getUser={this.getUser} 
+                        getUserRepos={this.getUserRepos} 
+                        user={user}
+                        repos={repos} 
+                        loading={loading}/>
+                )}/>
+              </Switch>  
           </div>      
-          {/* {loading ? 'Loading...':<h4>Hello {showName && name.toUpperCase()} and {foo()} and {this.foo1()}</h4>} */}
-          
         </div>
       </Router>
   );   
